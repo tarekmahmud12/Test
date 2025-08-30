@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coin Bazar</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="//libtl.com/sdk.js" data-zone="9673543" data-sdk="show_9673543"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .app-header {
+      background-color: #4b8afe;
+      color: #fff;
+      padding: 20px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .app-name {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-pic {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+    }
+
+    .user-details {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .user-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .user-name-input {
+      font-size: 1rem;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 120px;
+    }
+
+    .verify-badge {
+      background-color: #fff;
+      color: #4b8afe;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .edit-icon {
+      font-size: 1rem;
+    }
+
+    .user-stats {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .user-withdraw-stats {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #f0f2f5;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .welcome-stats {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .developed-by {
+      font-size: 0.7rem;
+      color: #999;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .watch-ad-btn, .join-btn, .submit-btn, .copy-btn, .share-btn, .task-btn {
+      background-color: #4b8afe;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 15px;
+      transition: background-color 0.3s ease;
+    }
+
+    .watch-ad-btn:hover, .join-btn:hover, .submit-btn:hover, .share-btn:hover, .task-btn:hover {
+      background-color: #3a75e3;
+    }
+
+    .ad-progress {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .bonus-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .bonus-item:last-child {
+      border-bottom: none;
+    }
+
+    .join-btn {
+      width: auto;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+      font-size: 0.9rem;
+    }
+
+    .input-with-btn {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-with-btn input {
+      flex-grow: 1;
+      background-color: #f0f2f5;
+    }
+
+    .copy-btn {
+      width: auto;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .share-btn {
+      margin-top: 20px;
+    }
+
+    .app-footer {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background-color: #fff;
+      padding: 10px 0;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+      border-top: 1px solid #eee;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #999;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .nav-item.active {
+      color: #4b8afe;
+    }
+
+    .nav-item .icon {
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .task-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .task-btn {
+      width: calc(50% - 5px);
+      margin-top: 0;
+    }
+
+    .task-btn.disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    .points-rule {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .task-rules {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    .withdrawal-history-card h2 {
+      margin-bottom: 10px;
+    }
+
+    .withdrawal-history-card ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .withdrawal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background-color: #fff;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .withdrawal-info {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    .withdrawal-amount {
+      font-weight: bold;
+      color: #4b8afe;
+      margin-top: 4px;
+    }
+
+    .withdrawal-details {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+      color: #fff;
+      margin-top: 4px;
+    }
+
+    .status.pending {
+      background-color: #f7b731;
+    }
+
+    .status.completed {
+      background-color: #4b8afe;
+    }
+
+    .status.rejected {
+      background-color: #e74c3c;
+    }
+
+    .loading-message,
+    .no-history-message,
+    .error-message {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .app-container {
+        border-radius: 0;
+      }
+    }
+    
+    /* Custom Alert/Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 300px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .modal-content h3 {
+      margin-top: 0;
+    }
+    .modal-content p {
+      margin-bottom: 20px;
+    }
+    .modal-content button {
+      background-color: #4b8afe;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-top">
+        <i class="icon back-icon"></i>
+        <h1 class="app-name">Coin Bazar</h1>
+        <i class="icon settings-icon">⚙️</i>
+      </div>
+      <div class="profile-card">
+        <div class="profile-info">
+          <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiLqGbEPB7_YxQqC_SRJmtpap6Y10JyFPK92LOvD7BknNHvuQNK90Lous-9h6zuYULOjK-s6BcVeAT3qDVpa4Al1m9OVk5DTUf-JkKTOiEo3yz2yre8Lkh1gBHP780lphfbqPe_kSZ9UIWZ8jmKG9gE5X5L4LMRSgdDKU8XJF7lbV5BwSmR6O9sXe6VYGI/s1233/1000034050.png" alt="Profile Picture" class="profile-pic" id="profile-pic">
+          <div class="user-details">
+            <span class="user-name" id="user-name-display">User</span>
+            <span class="verify-badge">✅</span>
+            <i class="icon edit-icon" id="edit-name-btn">✏️</i>
+          </div>
+        </div>
+        <div class="user-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="total-points">0</span>
+            <span class="stat-label">Points</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="ads-left-value">10</span>
+            <span class="stat-label">Ads Left</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="total-ads-watched">0</span>
+            <span class="stat-label">Total Watched</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="main-content">
+      <section id="home-page" class="page active">
+        <div class="welcome-card card">
+          <h2 class="welcome-text">Welcome, <span id="welcome-user-name">User</span>!</h2>
+          <p>Start earning points by completing tasks, watching ads, and inviting friends.</p>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="welcome-ads-left">10</span>
+              <span class="stat-label">Ads Left</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="total-points">0</span>
+              <span class="stat-label">Points</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">0</span>
+              <span class="stat-label">Referrals</span>
+            </div>
+          </div>
+          <p class="developed-by">Developed by: Coin Bazar</p>
+        </div>
+        <div class="watch-ads-card card">
+          <h2>Watch Ads</h2>
+          <p>Watch short video ads to earn points. You can watch up to 10 ads every 30 minutes.</p>
+          <p class="points-rule">Each ad rewards you with 10 points.</p>
+          <div class="ad-progress">
+            <span id="ad-watched-count">0/10 watched</span>
+            <span id="ad-timer">00:00 remaining</span>
+          </div>
+          <button class="watch-ad-btn">Watch Ad & Earn</button>
+        </div>
+      </section>
+
+      <section id="tasks-page" class="page">
+        <div class="tasks-card card">
+          <h2>Daily Tasks</h2>
+          <p class="task-rules">
+            Complete a task to earn 05 points. To successfully complete a task, you must:
+            <br>- Stay on the website for at least 20 seconds.
+            <br>- If prompted, sign up for the website.
+            <br>Each task can be completed once per hour.
+          </p>
+          <div class="task-buttons">
+            <button class="task-btn" data-task-id="1" data-task-url="https://otieu.com/4/9569264">Task 1: +05 Points</button>
+            <button class="task-btn" data-task-id="2" data-task-url="https://www.profitableratecpm.com/yh7pvdve?key=58d4a9b60d7d99d8d92682690909edc3">Task 2: +05 Points</button>
+            <button class="task-btn" data-task-id="3" data-task-url="https://otieu.com/4/9569264">Task 3: +05 Points</button>
+            <button class="task-btn" data-task-id="4" data-task-url="https://otieu.com/4/9627131">Task 4: +05 Points</button>
+            <button class="task-btn" data-task-id="5" data-task-url="https://www.profitableratecpm.com/an1nkzmp5v?key=e428dec5d97a44ad25af956b86d80b0a">Task 5: +05 Points</button>
+            <button class="task-btn" data-task-id="6" data-task-url="https://www.profitableratecpm.com/dwefq6kikh?key=6d8d2916ba7ea314b67c26d55a038c80">Task 6: +05 Points</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="bonus-page" class="page">
+        <div class="bonus-card card">
+          <h2>Bonus Rewards</h2>
+          <p>Join our community channels to earn bonus points. Visit the channel and return to claim your reward.</p>
+          <div class="bonus-item">
+            <span>Official Channel</span>
+            <button class="join-btn" data-bonus-name="officialChannel" data-channel-link="https://t.me/coinbazarmessage" data-bonus-points="20">+20 Points</button>
+          </div>
+          <div class="bonus-item">
+            <span>Support Group</span>
+            <button class="join-btn" data-bonus-name="supportGroup" data-channel-link="https://t.me/CoinBazarWithdraRequest" data-bonus-points="20">+20 Points</button>
+          </div>
+          <div class="bonus-item">
+            <span>Facebook Community</span>
+            <button class="join-btn" data-bonus-name="facebookCommunity" data-channel-link="https://www.facebook.com/share/1FfBhkYNgR/" data-bonus-points="20">+20 Points</button>
+          </div>
+          <div class="bonus-item">
+            <span>YouTube Community</span>
+            <button class="join-btn" data-bonus-name="youtubeCommunity" data-channel-link="https://www.youtube.com/@CoinBazarBD" data-bonus-points="20">+20 Points</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="withdraw-page" class="page">
+        <div class="withdraw-card card">
+          <h2>Withdraw</h2>
+          <div class="user-withdraw-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="total-withdrawals-count">0</span>
+              <span class="stat-label">Total Withdrawals</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="total-points-withdrawn">0</span>
+              <span class="stat-label">Points Withdrawn</span>
+            </div>
+          </div>
+          <p id="withdraw-message">Minimum 10,000 points are required for Mobile Banking withdrawal.</p>
+          <form id="withdraw-form">
+            <div class="form-group">
+              <label for="payment-method">Payment Method</label>
+              <select id="payment-method" required>
+                <option value="" disabled selected>Select method</option>
+                <optgroup label="Direct Payments">
+                  <option value="bkash">Bkash</option>
+                  <option value="nagad">Nagad</option>
+                </optgroup>
+                <optgroup label="International">
+                  <option value="binance">Binance</option>
+                  <option value="webmoney">WebMoney</option>
+                </optgroup>
+                <optgroup label="Mobile Recharge">
+                  <option value="grameenphone">Grameenphone</option>
+                  <option value="robi">Robi</option>
+                  <option value="jio">Jio</option>
+                  <option value="airtel">Airtel</option>
+                  <option value="banglalink">Banglalink</option>
+                  <option value="teletalk">Teletalk</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="amount">Amount (Points)</label>
+              <input type="number" id="amount" placeholder="Enter amount (min 10000)" required>
+            </div>
+            <div class="form-group">
+              <label for="account-id">Account Number/ID</label>
+              <input type="text" id="account-id" placeholder="Enter your account details" required>
+            </div>
+            <button type="submit" class="submit-btn">Submit Request</button>
+          </form>
+        </div>
+
+        <div class="withdrawal-history-card card">
+          <h2>Withdrawal History</h2>
+          <ul id="withdrawal-history-list">
+          </ul>
+        </div>
+      </section>
+
+      <section id="referral-page" class="page">
+        <div class="referral-card card">
+          <h2>Refer & Earn</h2>
+          <p>Invite friends and earn 200 points per successful referral!</p>
+          <div class="referral-item">
+            <label for="referral-code">Your Referral Code</label>
+            <div class="input-with-btn">
+              <input type="text" id="referral-code" value="CB123456" readonly>
+              <button class="copy-btn">Copy</button>
+            </div>
+          </div>
+          <div class="referral-item">
+            <label for="referral-link">Your Referral Link</label>
+            <div class="input-with-btn">
+              <input type="text" id="referral-link" value="https://t.me/CoinBazar_bot" readonly>
+              <button class="copy-btn">Copy</button>
+            </div>
+          </div>
+          <button class="share-btn">Share Link</button>
+          <div class="referral-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="referral-count">0</span>
+              <span class="stat-label">Referrals</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="referral-points-earned">0</span>
+              <span class="stat-label">Points Earned</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="nav-item active" data-page="home">
+        <i class="icon">🏠</i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" data-page="tasks">
+        <i class="icon">📋</i>
+        <span>Tasks</span>
+      </div>
+      <div class="nav-item" data-page="referral">
+        <i class="icon">👥</i>
+        <span>Refer</span>
+      </div>
+      <div class="nav-item" data-page="withdraw">
+        <i class="icon">💸</i>
+        <span>Withdraw</span>
+      </div>
+      <div class="nav-item" data-page="bonus">
+        <i class="icon">🎁</i>
+        <span>Bonus</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Custom Modal/Alert UI -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle"></h3>
+      <p id="modalMessage"></p>
+      <button id="modalOkBtn">ঠিক আছে</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, updateDoc,
+      serverTimestamp, Timestamp, increment,
+      collection, query, where, getDocs, orderBy
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import {
+      getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+    // ======================= Global Variables =======================
+    // এই ভ্যারিয়েবলগুলো ক্যানভাস এনভায়রনমেন্ট থেকে আসে।
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // ======================= Custom Modal/Alert Function =======================
+    function showCustomAlert(title, message) {
+        const modal = document.getElementById('myModal');
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        modal.style.display = 'block';
+        const okBtn = document.getElementById('modalOkBtn');
+        okBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+
+    // ======================= DOM Ready =======================
+    document.addEventListener("DOMContentLoaded", () => {
+      const navItems = document.querySelectorAll('.app-footer .nav-item');
+      const pages = document.querySelectorAll('.main-content .page');
+      const adWatchedCountSpan = document.getElementById('ad-watched-count');
+      const adTimerSpan = document.getElementById('ad-timer');
+      const totalPointsDisplay = document.getElementById('total-points');
+      const userNameDisplay = document.getElementById('user-name-display');
+      const welcomeUserNameDisplay = document.getElementById('welcome-user-name');
+      const editNameBtn = document.getElementById('edit-name-btn');
+      const adsLeftValue = document.getElementById('ads-left-value');
+      const totalAdsWatched = document.getElementById('total-ads-watched');
+      const welcomeAdsLeft = document.getElementById('welcome-ads-left');
+      const watchAdBtn = document.querySelector('.watch-ad-btn');
+      const taskButtons = document.querySelectorAll('.task-btn');
+      const referralCodeInput = document.getElementById('referral-code');
+      const referralLinkInput = document.getElementById('referral-link');
+      const profilePic = document.getElementById('profile-pic');
+      const joinBonusBtns = document.querySelectorAll('.join-btn');
+      const withdrawForm = document.getElementById('withdraw-form');
+      const paymentMethodSelect = document.getElementById('payment-method');
+      const amountInput = document.getElementById('amount');
+      const withdrawMessageSpan = document.getElementById('withdraw-message');
+      const withdrawalHistoryList = document.getElementById('withdrawal-history-list');
+      const totalWithdrawalsCount = document.getElementById('total-withdrawals-count');
+      const totalPointsWithdrawn = document.getElementById('total-points-withdrawn');
+      const shareBtn = document.querySelector('.share-btn');
+      const referralCountDisplay = document.getElementById('referral-count');
+      const referralPointsEarnedDisplay = document.getElementById('referral-points-earned');
+      const copyButtons = document.querySelectorAll('.copy-btn');
+
+      let adsWatched = 0;
+      let dailyAdsWatched = 0;
+      const maxAdsPerCycle = 10;
+      const adResetTimeInMinutes = 30;
+      let adTimerInterval = null;
+      let adCooldownEnds = null;
+      let totalPoints = 0;
+      let userName = 'User';
+      const pointsPerAd = 10;
+      const pointsPerTask = 5;
+      const referrerPoints = 200;
+      let taskTimers = {};
+      let telegramId = null;
+      let telegramUser = null;
+      let referrerCode = null;
+      let bonusClaimed = {};
+      let lastAdResetDate = null;
+      let userDocRef = null; // Dynamically determined user document reference
+
+      // ======================= Telegram Init =======================
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+          telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
+          telegramId = String(telegramUser.id);
+          referrerCode = window.Telegram.WebApp.initDataUnsafe.start_param;
+          if (referrerCode) {
+            console.log("Referrer code found:", referrerCode);
+          }
+          if (telegramUser?.photo_url) {
+            profilePic.src = telegramUser.photo_url;
+          }
+        } else {
+          console.warn("Telegram user not found. Using fallback ID.");
+          telegramId = 'fallback-test-user-id';
+          telegramUser = {
+            id: telegramId,
+            first_name: 'Fallback',
+            last_name: 'User',
+            username: 'fallback_user'
+          };
+        }
+      } catch (e) {
+        console.error("Telegram init error:", e);
+        telegramId = 'fallback-test-user-id';
+        telegramUser = {
+          id: telegramId,
+          first_name: 'Fallback',
+          last_name: 'User',
+          username: 'fallback_user'
+        };
+      }
+
+      // ======================= Firebase Auth & User Data Load =======================
+      let firebaseUID = null;
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } catch (err) {
+                    console.error("Error signing in with custom token:", err);
+                    await signInAnonymously(auth);
+                }
+            } else {
+                await signInAnonymously(auth);
+            }
+            return;
+        }
+
+        firebaseUID = user.uid;
+        await loadUserDataFromFirebase();
+        updateReferralLinkInput();
+        setInterval(updateTaskButtons, 1000);
+      });
+
+      const loadUserDataFromFirebase = async () => {
+        if (!firebaseUID) return;
+
+        try {
+          // Attempt to find a document with the new Telegram ID
+          const telegramDocRef = doc(db, "users", telegramId);
+          const telegramSnap = await getDoc(telegramDocRef);
+
+          if (telegramSnap.exists()) {
+            console.log("Found user data with Telegram ID. Using new format.");
+            userDocRef = telegramDocRef;
+          } else {
+            // If not found, check for a document with the old Firebase UID
+            const oldUserQuery = query(collection(db, "users"), where("firebaseUID", "==", firebaseUID));
+            const oldUserSnap = await getDocs(oldUserQuery);
+
+            if (!oldUserSnap.empty) {
+              // Old user found, continue using the old document ID
+              console.log("Found old user data with Firebase UID. Using old format.");
+              userDocRef = oldUserSnap.docs[0].ref;
+            } else {
+              // New user, create a new document with Telegram ID as the key
+              console.log("New user. Creating a new document with Telegram ID.");
+              userDocRef = doc(db, "users", telegramId);
+
+              let newName = telegramUser?.first_name || 'User';
+              if (telegramUser?.last_name) newName += ` ${telegramUser.last_name}`;
+              userName = newName;
+              const newReferralCode = generateReferralCode();
+              let hasReferrer = !!referrerCode;
+
+              await setDoc(userDocRef, {
+                firebaseUID,
+                telegramId,
+                userName,
+                points: 0,
+                adsWatched: 0,
+                dailyAdsWatched: 0,
+                lastAdResetDate: serverTimestamp(),
+                adsCooldownEnds: null,
+                taskTimers: {},
+                referralCode: newReferralCode,
+                lastUpdated: serverTimestamp(),
+                hasReferrer: hasReferrer,
+                referralCount: 0,
+                referralPointsEarned: 0,
+                totalWithdrawalsCount: 0,
+                totalPointsWithdrawn: 0,
+                bonusClaimed: {}
+              });
+              
+              totalPoints = 0;
+              referralCodeInput.value = newReferralCode;
+              dailyAdsWatched = 0;
+
+              if (referrerCode) {
+                await awardReferralPoints(referrerCode);
+                await updateDoc(userDocRef, { hasReferrer: true, lastUpdated: serverTimestamp() });
+              }
+              
+              // No need to proceed further, new user data is set.
+              userNameDisplay.textContent = userName;
+              welcomeUserNameDisplay.textContent = userName;
+              updatePointsDisplay();
+              updateAdsCounter();
+              updateTaskButtons();
+              updateBonusButtons();
+              return;
+            }
+          }
+
+          // If we are here, userDocRef is pointing to an existing document.
+          const snap = await getDoc(userDocRef);
+          if (snap.exists()) {
+            const data = snap.data();
+            userName = data.userName || (telegramUser?.first_name || 'User');
+            totalPoints = data.points || 0;
+            adsWatched = data.adsWatched || 0;
+            dailyAdsWatched = data.dailyAdsWatched || 0;
+            lastAdResetDate = data.lastAdResetDate ? toDate(data.lastAdResetDate) : null;
+            taskTimers = data.taskTimers || {};
+            bonusClaimed = data.bonusClaimed || {};
+            if (data.adsCooldownEnds) {
+              adCooldownEnds = toDate(data.adsCooldownEnds);
+            } else {
+              adCooldownEnds = null;
+            }
+            referralCodeInput.value = data.referralCode || generateReferralCode();
+            updateReferralStats(data.referralCount || 0, data.referralPointsEarned || 0);
+            totalWithdrawalsCount.textContent = data.totalWithdrawalsCount || 0;
+            totalPointsWithdrawn.textContent = data.totalPointsWithdrawn || 0;
+            
+            const now = new Date();
+            const resetDate = toDate(lastAdResetDate);
+            if (!resetDate || resetDate.getDate() !== now.getDate() || resetDate.getMonth() !== now.getMonth() || resetDate.getFullYear() !== now.getFullYear()) {
+                 dailyAdsWatched = 0;
+                 lastAdResetDate = now;
+                 console.log("Daily ad count reset.");
+            }
+            
+            if (referrerCode && !data.hasReferrer) {
+                await awardReferralPoints(referrerCode);
+                await updateDoc(userDocRef, { hasReferrer: true, lastUpdated: serverTimestamp() });
+                console.log("Referral bonus processed for new user.");
+            }
+          }
+          
+          // Update UI after loading/setting data
+          userNameDisplay.textContent = userName;
+          welcomeUserNameDisplay.textContent = userName;
+          updatePointsDisplay();
+          updateAdsCounter();
+          updateTaskButtons();
+          updateBonusButtons();
+
+          if (adCooldownEnds && adCooldownEnds.getTime() > Date.now()) {
+            const secondsLeft = Math.max(0, Math.floor((adCooldownEnds.getTime() - Date.now()) / 1000));
+            startAdTimer(secondsLeft);
+          } else {
+            adsWatched = 0;
+            adCooldownEnds = null;
+            updateAdsCounter();
+            adTimerSpan.textContent = 'Ready!';
+            saveUserDataToFirebase();
+          }
+          
+          saveUserDataToFirebase();
+
+        } catch (error) {
+          console.error("Error loading data:", error);
+          showCustomAlert("Error", "There was an error loading your data. Please refresh.");
+        }
+      };
+
+      const toDate = (maybeTs) => {
+        try {
+          if (!maybeTs) return null;
+          if (maybeTs instanceof Date) return maybeTs;
+          if (maybeTs.toDate && typeof maybeTs.toDate === 'function') return maybeTs.toDate();
+          return new Date(maybeTs);
+        } catch {
+          return null;
+        }
+      };
+
+      const updatePointsDisplay = () => {
+        totalPointsDisplay.textContent = String(totalPoints);
+      };
+      
+      const updateAdsCounter = () => {
+        const adsLeft = Math.max(0, maxAdsPerCycle - adsWatched);
+        adWatchedCountSpan.textContent = `${adsWatched}/${maxAdsPerCycle} watched`;
+        adsLeftValue.textContent = String(adsLeft);
+        welcomeAdsLeft.textContent = String(adsLeft);
+        totalAdsWatched.textContent = String(dailyAdsWatched);
+
+        if (adsWatched >= maxAdsPerCycle && adCooldownEnds && adCooldownEnds.getTime() > Date.now()) {
+          watchAdBtn.disabled = true;
+          watchAdBtn.textContent = 'Waiting for timer to finish';
+        } else {
+          watchAdBtn.disabled = false;
+          watchAdBtn.textContent = `Watch Ad & Earn ${pointsPerAd} Points`;
+        }
+      };
+
+      const updateReferralStats = (referralCount, pointsEarned) => {
+        referralCountDisplay.textContent = referralCount;
+        referralPointsEarnedDisplay.textContent = pointsEarned;
+      };
+
+      const switchPage = (pageId) => {
+        pages.forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId)?.classList.add('active');
+        navItems.forEach(item => {
+          item.classList.remove('active');
+          if (item.dataset.page + '-page' === pageId) item.classList.add('active');
+        });
+      };
+
+      const generateReferralCode = () => {
+        const uniqueId = Math.floor(100000 + Math.random() * 900000);
+        return `CB${uniqueId}`;
+      };
+
+      const updateReferralLinkInput = () => {
+        const code = referralCodeInput.value || "CB123456";
+        referralLinkInput.value = `https://t.me/CoinBazar_bot?start=${code}`;
+      };
+
+      const awardReferralPoints = async (referrerCode) => {
+        if (!referrerCode) return;
+        try {
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("referralCode", "==", referrerCode));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const referrerDoc = querySnapshot.docs[0];
+            const referrerDocRef = referrerDoc.ref;
+            await updateDoc(referrerDocRef, {
+              points: increment(referrerPoints),
+              referralCount: increment(1),
+              referralPointsEarned: increment(referrerPoints)
+            });
+            console.log("Referral points awarded to:", referrerCode);
+          } else {
+            console.warn("Referrer not found with code:", referrerCode);
+          }
+        } catch (error) {
+          console.error("Error awarding referral points:", error);
+        }
+      };
+
+      const saveUserDataToFirebase = async () => {
+        if (!userDocRef) return;
+        try {
+          const timersToSave = {};
+          Object.keys(taskTimers || {}).forEach(k => {
+            const d = toDate(taskTimers[k]);
+            if (d) timersToSave[k] = Timestamp.fromDate(d);
+          });
+          await setDoc(userDocRef, {
+            firebaseUID,
+            telegramId,
+            userName,
+            points: totalPoints,
+            adsWatched,
+            dailyAdsWatched,
+            lastAdResetDate: lastAdResetDate ? Timestamp.fromDate(lastAdResetDate) : null,
+            adsCooldownEnds: adCooldownEnds ? Timestamp.fromDate(adCooldownEnds) : null,
+            taskTimers: timersToSave,
+            bonusClaimed,
+            referralCode: referralCodeInput.value || generateReferralCode(),
+            lastUpdated: serverTimestamp(),
+          }, { merge: true });
+        } catch (error) {
+          console.error("Error saving data:", error);
+        }
+      };
+
+      const updateTaskButtons = () => {
+        const now = Date.now();
+        const taskCooldownInHours = 1;
+
+        taskButtons.forEach(button => {
+          const taskId = button.dataset.taskId;
+          let cooldownEndTime = null;
+          const saved = taskTimers[taskId];
+          if (saved) {
+            const d = toDate(saved);
+            if (d) cooldownEndTime = d.getTime();
+          }
+          if (cooldownEndTime && now < cooldownEndTime) {
+            const timeLeft = Math.floor((cooldownEndTime - now) / 1000);
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            button.textContent = `Active in: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            button.disabled = true;
+          } else {
+            button.textContent = `Task ${taskId}: +${pointsPerTask} Points`;
+            button.disabled = false;
+          }
+        });
+      };
+
+      taskButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+          const taskId = button.dataset.taskId;
+          const taskUrl = button.dataset.taskUrl;
+          const taskCooldownInSeconds = 20;
+
+          if (button.disabled) return;
+
+          button.textContent = `Please wait ${taskCooldownInSeconds} seconds...`;
+          button.disabled = true;
+
+          const newWindow = window.open(taskUrl, '_blank');
+
+          const timerStart = Date.now();
+          const timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - timerStart) / 1000);
+            const remaining = Math.max(0, taskCooldownInSeconds - elapsed);
+            button.textContent = `Please wait ${remaining} seconds...`;
+            if (remaining <= 0) {
+              clearInterval(timerInterval);
+              if (newWindow) newWindow.close();
+              showCustomAlert("Task Completed!", `Task ${taskId} completed! You earned ${pointsPerTask} points.`);
+              totalPoints += pointsPerTask;
+              updatePointsDisplay();
+              const cooldownEnds = new Date(Date.now() + 1 * 60 * 60 * 1000);
+              taskTimers[taskId] = cooldownEnds;
+              saveUserDataToFirebase();
+              updateTaskButtons();
+            }
+          }, 1000);
+
+          const checkBack = () => {
+            if (Date.now() - timerStart < taskCooldownInSeconds * 1000) {
+              clearInterval(timerInterval);
+              showCustomAlert("Task Failed", "Task failed! You must stay on the page for at least 15 seconds to earn points.");
+              button.textContent = `Task ${taskId}: +${pointsPerTask} Points`;
+              button.disabled = false;
+            }
+            window.removeEventListener('focus', checkBack);
+          };
+
+          window.addEventListener('focus', checkBack);
+        });
+      });
+
+      const updateBonusButtons = () => {
+        joinBonusBtns.forEach(btn => {
+          const bonusName = btn.dataset.bonusName;
+          if (bonusClaimed[bonusName]) {
+            btn.textContent = 'Join Now';
+            btn.disabled = false;
+          } else {
+            btn.textContent = `+${btn.dataset.bonusPoints} Points`;
+            btn.disabled = false;
+          }
+        });
+      };
+
+      joinBonusBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const bonusName = btn.dataset.bonusName;
+          const channelLink = btn.dataset.channel-link;
+          const bonusPoints = Number(btn.dataset.bonus-points);
+
+          if (bonusClaimed[bonusName]) {
+            window.open(channelLink, '_blank');
+            return;
+          }
+
+          if (btn.dataset.claiming === 'true') {
+            showCustomAlert("Wait", "Please wait for the current bonus to process.");
+            return;
+          }
+
+          window.open(channelLink, '_blank');
+
+          btn.dataset.claiming = 'true';
+          btn.disabled = true;
+
+          try {
+            const userDoc = userDocRef;
+            await updateDoc(userDoc, {
+              points: increment(bonusPoints),
+              [`bonusClaimed.${bonusName}`]: true
+            });
+
+            totalPoints += bonusPoints;
+            updatePointsDisplay();
+            bonusClaimed[bonusName] = true;
+
+            showCustomAlert("Bonus Claimed", `You've successfully claimed your bonus of ${bonusPoints} points!`);
+
+          } catch(error) {
+            console.error("Error claiming bonus:", error);
+            showCustomAlert("Error", "Failed to claim bonus. Please try again.");
+          } finally {
+            btn.dataset.claiming = 'false';
+            btn.textContent = 'Join Now';
+            btn.disabled = false;
+            await saveUserDataToFirebase();
+            updateBonusButtons();
+          }
+        });
+      });
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const pageId = item.dataset.page + '-page';
+          switchPage(pageId);
+          if (pageId === 'withdraw-page') {
+            loadWithdrawalHistory();
+          }
+        });
+      });
+
+      copyButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const input = e.target.previousElementSibling;
+          input.select();
+          input.setSelectionRange(0, 99999);
+          document.execCommand('copy');
+          showCustomAlert("Copied!", 'Link copied to clipboard! You can now share it with friends to earn points.');
+        });
+      });
+
+      shareBtn.addEventListener('click', () => {
+        const referralLink = referralLinkInput.value;
+        const shareText = `Join Coin Bazar Mini App and earn daily rewards! My referral code is: ${referralCodeInput.value}\n\n${referralLink}`;
+        if (navigator.share) {
+          navigator.share({
+            title: 'Join Coin Bazar',
+            text: shareText,
+          }).catch(error => {
+            console.error('Error sharing:', error);
+          });
+        } else {
+          showCustomAlert("Copy Manually", 'Your browser does not support the Web Share API. Please copy the link manually.');
+          referralLinkInput.select();
+          document.execCommand('copy');
+        }
+      });
+
+      paymentMethodSelect.addEventListener('change', () => {
+        const method = paymentMethodSelect.value;
+        if (method === 'bkash' || method === 'nagad') {
+          withdrawMessageSpan.textContent = 'Minimum 10,000 points are required for Mobile Banking withdrawal.';
+          amountInput.placeholder = "Enter amount (min 10000)";
+          amountInput.value = '';
+        } else if (method === 'grameenphone' || method === 'robi' || method === 'jio' || method === 'airtel' || method === 'banglalink' || method === 'teletalk') {
+          withdrawMessageSpan.textContent = 'Minimum 2,000 points are required for Mobile Recharge.';
+          amountInput.placeholder = "Enter amount (min 2000)";
+          amountInput.value = '';
+        } else if (method === 'binance' || method === 'webmoney') {
+          withdrawMessageSpan.textContent = 'Minimum 100,000 points are required for International Banking withdrawal.';
+          amountInput.placeholder = "Enter amount (min 100000)";
+        } else {
+          withdrawMessageSpan.textContent = '';
+          amountInput.placeholder = "Enter amount (points)";
+        }
+      });
+
+      withdrawForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const paymentMethod = paymentMethodSelect.value;
+        const amount = Number(amountInput.value || 0);
+        const accountId = document.getElementById('account-id').value.trim();
+        let minAmount = 0;
+
+        if (!paymentMethod || amount <= 0 || !accountId) {
+          showCustomAlert("Error", 'Please fill out all fields correctly.');
+          return;
+        }
+
+        if (totalPoints < amount) {
+          showCustomAlert("Error", `Not enough points. You only have ${totalPoints} points.`);
+          return;
+        }
+
+        if (paymentMethod === 'bkash' || paymentMethod === 'nagad') {
+          minAmount = 10000;
+          if (amount < minAmount) {
+            showCustomAlert("Withdrawal Error", `For Mobile Banking, the minimum withdrawal amount is ${minAmount} points.`);
+            return;
+          }
+        } else if (paymentMethod === 'grameenphone' || paymentMethod === 'robi' || paymentMethod === 'jio' || paymentMethod === 'airtel' || paymentMethod === 'banglalink' || paymentMethod === 'teletalk') {
+          minAmount = 2000;
+          if (amount < minAmount) {
+            showCustomAlert("Withdrawal Error", `For Mobile Recharge, the minimum withdrawal amount is ${minAmount} points.`);
+            return;
+          }
+        } else if (paymentMethod === 'binance' || paymentMethod === 'webmoney') {
+          minAmount = 100000;
+          if (amount < minAmount) {
+            showCustomAlert("Withdrawal Error", `For International Banking, the minimum withdrawal amount is ${minAmount} points.`);
+            return;
+          }
+        }
+
+        if (!userDocRef) {
+          showCustomAlert("Authentication Error", 'Authentication error. Please refresh the page and try again.');
+          return;
+        }
+
+        try {
+          await updateDoc(userDocRef, {
+            points: increment(-amount),
+            totalWithdrawalsCount: increment(1),
+            totalPointsWithdrawn: increment(amount)
+          });
+          totalPoints -= amount;
+          updatePointsDisplay();
+
+          const withdrawalDoc = doc(collection(db, "withdrawals"));
+          await setDoc(withdrawalDoc, {
+            firebaseUID: firebaseUID,
+            telegramId: telegramId,
+            userName: userName,
+            amount: amount,
+            paymentMethod: paymentMethod,
+            accountId: accountId,
+            timestamp: serverTimestamp(),
+            status: 'pending'
+          });
+
+          showCustomAlert("Success!", 'Withdrawal request submitted successfully!');
+          e.target.reset();
+          loadWithdrawalHistory();
+        } catch (error) {
+          console.error('Error submitting withdrawal request:', error);
+          showCustomAlert("Error", 'An error occurred. Please check your connection and try again.');
+        }
+      });
+
+      const loadWithdrawalHistory = async () => {
+        if (!userDocRef) {
+          withdrawalHistoryList.innerHTML = '<li class="error-message">Authentication error. Please refresh the page.</li>';
+          return;
+        }
+        withdrawalHistoryList.innerHTML = '<li class="loading-message">Loading history...</li>';
+        totalWithdrawalsCount.textContent = '0';
+        totalPointsWithdrawn.textContent = '0';
+        try {
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            totalWithdrawalsCount.textContent = userData.totalWithdrawalsCount || 0;
+            totalPointsWithdrawn.textContent = userData.totalPointsWithdrawn || 0;
+          }
+
+          const q = query(
+            collection(db, "withdrawals"),
+            where("firebaseUID", "==", firebaseUID),
+            orderBy("timestamp", "desc")
+          );
+          const querySnapshot = await getDocs(q);
+          withdrawalHistoryList.innerHTML = '';
+          if (querySnapshot.empty) {
+            withdrawalHistoryList.innerHTML = '<li class="no-history-message">No withdrawal history found.</li>';
+          } else {
+            querySnapshot.forEach(doc => {
+              const withdrawal = doc.data();
+              const date = withdrawal.timestamp ? toDate(withdrawal.timestamp).toLocaleDateString() : 'N/A';
+              const time = withdrawal.timestamp ? toDate(withdrawal.timestamp).toLocaleTimeString() : 'N/A';
+              const listItem = document.createElement('li');
+              listItem.className = `withdrawal-item ${withdrawal.status}`;
+              const statusText = withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1);
+              listItem.innerHTML = `
+                <div class="withdrawal-info">
+                  <span>Method: ${withdrawal.paymentMethod}</span>
+                  <span class="withdrawal-amount">Amount: ${withdrawal.amount} Points</span>
+                </div>
+                <div class="withdrawal-details">
+                  <span>Date: ${date} ${time}</span>
+                  <span class="status ${withdrawal.status}">${statusText}</span>
+                </div>
+              `;
+              withdrawalHistoryList.appendChild(listItem);
+            });
+          }
+        } catch (error) {
+          console.error("Error loading withdrawal history:", error);
+          withdrawalHistoryList.innerHTML = '<li class="error-message">Error loading history. Please try again.</li>';
+        }
+      };
+
+      editNameBtn.addEventListener('click', () => {
+        const currentName = userNameDisplay.textContent;
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = currentName;
+        nameInput.className = 'user-name-input';
+        nameInput.maxLength = 20;
+        userNameDisplay.replaceWith(nameInput);
+        nameInput.focus();
+        const saveName = async () => {
+          const newName = nameInput.value.trim() || 'User';
+          userName = newName;
+          userNameDisplay.textContent = newName;
+          welcomeUserNameDisplay.textContent = newName;
+          nameInput.replaceWith(userNameDisplay);
+          await saveUserDataToFirebase();
+        };
+        nameInput.addEventListener('blur', saveName);
+        nameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') saveName();
+        });
+      });
+
+      const startAdTimer = (initialSeconds = adResetTimeInMinutes * 60) => {
+        let timeLeft = Math.ceil(initialSeconds);
+        adTimerSpan.textContent = formatTime(timeLeft);
+        watchAdBtn.disabled = true;
+        if (adTimerInterval) clearInterval(adTimerInterval);
+        adTimerInterval = setInterval(async () => {
+          timeLeft--;
+          adTimerSpan.textContent = formatTime(timeLeft);
+          if (timeLeft <= 0) {
+            clearInterval(adTimerInterval);
+            adsWatched = 0;
+            adCooldownEnds = null;
+            updateAdsCounter();
+            adTimerSpan.textContent = 'Ready!';
+            saveUserDataToFirebase();
+          }
+        }, 1000);
+      };
+
+      const formatTime = (seconds) => {
+        if (seconds <= 0) return 'Ready!';
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} remaining`;
+      };
+
+      watchAdBtn.addEventListener('click', async () => {
+        if (adsWatched >= maxAdsPerCycle) {
+          showCustomAlert("Ad Limit Reached", 'You have reached the ad limit for this cycle. Please wait for the timer to finish.');
+          return;
+        }
+
+        if (typeof window.show_9673543 === 'function') {
+          try {
+            await window.show_9673543().then(() => {
+              adsWatched++;
+              dailyAdsWatched++;
+              totalPoints += pointsPerAd;
+              updateAdsCounter();
+              updatePointsDisplay();
+              if (adsWatched >= maxAdsPerCycle) {
+                adCooldownEnds = new Date(Date.now() + adResetTimeInMinutes * 60 * 1000);
+                startAdTimer();
+                showCustomAlert("Timer Started", 'You have watched all ads for this cycle. The timer has started!');
+              } else {
+                showCustomAlert("Points Earned", `You earned ${pointsPerAd} points!`);
+              }
+              saveUserDataToFirebase();
+            }).catch(async (e) => {
+              console.error('Rewarded Interstitial failed, trying Rewarded Popup:', e);
+              await window.show_9673543('pop').then(() => {
+                adsWatched++;
+                dailyAdsWatched++;
+                totalPoints += pointsPerAd;
+                updateAdsCounter();
+                updatePointsDisplay();
+                if (adsWatched >= maxAdsPerCycle) {
+                  adCooldownEnds = new Date(Date.now() + adResetTimeInMinutes * 60 * 1000);
+                  startAdTimer();
+                  showCustomAlert("Timer Started", 'You have watched all ads for this cycle. The timer has started!');
+                } else {
+                  showCustomAlert("Points Earned", `You earned ${pointsPerAd} points!`);
+                }
+                saveUserDataToFirebase();
+              }).catch(e => {
+                console.error('Rewarded Popup also failed:', e);
+                showCustomAlert("Error", 'There was an error loading the ad. Please try again.');
+              });
+            });
+          } catch (e) {
+            console.error('Ad function call failed:', e);
+            showCustomAlert("Error", 'Ad script not loaded. Please try again.');
+          }
+        } else {
+          showCustomAlert("Error", 'Ad script not loaded. Please try again.');
+        }
+      });
+      userNameDisplay.textContent = userName;
+      welcomeUserNameDisplay.textContent = userName;
+      updatePointsDisplay();
+      updateAdsCounter();
+      navItems.forEach(item => {
+        const pageId = item.dataset.page + '-page';
+        if (item.classList.contains('active')) switchPage(pageId);
+      });
+    });
+  </script>
+</body>
+</html>
