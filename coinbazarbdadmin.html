@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Coin Bazar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      color: #1f2937;
+    }
+    .main-container {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    .tab-item.active {
+      background-color: #e5e7eb;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.5rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+    th {
+      background-color: #e5e7eb;
+      font-weight: 600;
+      color: #4b5563;
+    }
+    tr:nth-child(odd) {
+      background-color: #f9fafb;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .btn-action {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+    }
+    .btn-approve {
+      background-color: #22c55e;
+      color: #fff;
+    }
+    .btn-reject {
+      background-color: #ef4444;
+      color: #fff;
+    }
+    .btn-edit {
+      background-color: #3b82f6;
+      color: #fff;
+    }
+    .btn-delete {
+      background-color: #dc2626;
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Admin Login Form -->
+  <div id="login-panel" class="min-h-screen flex items-center justify-center p-4">
+    <div class="card w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-6 text-center">এডমিন লগইন</h2>
+      <form id="login-form">
+        <div class="mb-4">
+          <label for="admin-email" class="block text-gray-700 font-semibold mb-2">ইমেইল</label>
+          <input type="email" id="admin-email" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ইমেইল দিন" required>
+        </div>
+        <div class="mb-4">
+          <label for="admin-password" class="block text-gray-700 font-semibold mb-2">পাসওয়ার্ড</label>
+          <input type="password" id="admin-password" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="পাসওয়ার্ড দিন" required>
+        </div>
+        <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors">লগইন</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Panel Content (Initially hidden) -->
+  <div id="admin-panel" class="main-container hidden">
+    <header class="bg-blue-500 text-white p-6 rounded-b-xl shadow-md">
+      <h1 class="text-3xl font-bold">কয়েন বাজার এডমিন প্যানেল</h1>
+      <p class="mt-1">এখানে আপনি ব্যবহারকারীদের ডেটা, উইথড্রয়াল অনুরোধ এবং অ্যাপের কনটেন্ট পরিচালনা করতে পারবেন।</p>
+    </header>
+
+    <main class="mt-6">
+      <div class="flex bg-white p-2 rounded-lg shadow-sm mb-4">
+        <button id="tab-users" class="tab-item active flex-1 py-2 px-4 rounded-lg text-center font-semibold">ব্যবহারকারী</button>
+        <button id="tab-withdrawals" class="tab-item flex-1 py-2 px-4 rounded-lg text-center font-semibold">উইথড্রয়াল</button>
+        <button id="tab-controls" class="tab-item flex-1 py-2 px-4 rounded-lg text-center font-semibold">কন্ট্রোল</button>
+      </div>
+
+      <!-- Users Tab Content -->
+      <section id="page-users" class="tab-content">
+        <div class="card">
+          <h2 class="text-xl font-bold mb-4">সকল ব্যবহারকারী</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th class="rounded-l-lg">ইউজার আইডি</th>
+                  <th>নাম</th>
+                  <th>পয়েন্ট</th>
+                  <th class="rounded-r-lg">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <!-- User data will be inserted here by JavaScript -->
+                <tr><td colspan="4" class="text-center p-4">ডাটা লোড হচ্ছে...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Withdrawals Tab Content -->
+      <section id="page-withdrawals" class="tab-content hidden">
+        <div class="card">
+          <h2 class="text-xl font-bold mb-4">উইথড্রয়াল অনুরোধ</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th class="rounded-l-lg">ইউজার আইডি</th>
+                  <th>পেমেন্ট মেথড</th>
+                  <th>অ্যাকাউন্ট</th>
+                  <th>পয়েন্ট</th>
+                  <th>স্ট্যাটাস</th>
+                  <th class="rounded-r-lg">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="withdrawals-table-body">
+                <!-- Withdrawal data will be inserted here by JavaScript -->
+                <tr><td colspan="6" class="text-center p-4">ডাটা লোড হচ্ছে...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Controls Tab Content -->
+      <section id="page-controls" class="tab-content hidden">
+        <div class="card">
+          <h2 class="text-xl font-bold mb-4">অ্যাড এবং টাস্ক কন্ট্রোল</h2>
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Ads Control -->
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold mb-2">অ্যাড সেটিংস</h3>
+              <form id="ad-settings-form">
+                <div class="mb-4">
+                  <label for="ads-per-cycle" class="block text-gray-700 font-semibold mb-2">প্রতি সাইকেলে অ্যাডের সংখ্যা</label>
+                  <input type="number" id="ads-per-cycle" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                  <label for="ad-reset-time" class="block text-gray-700 font-semibold mb-2">অ্যাড রিসেট টাইম (মিনিট)</label>
+                  <input type="number" id="ad-reset-time" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                  <label for="points-per-ad" class="block text-gray-700 font-semibold mb-2">প্রতি অ্যাডে পয়েন্ট</label>
+                  <input type="number" id="points-per-ad" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors">সেটিংস সেভ করুন</button>
+              </form>
+            </div>
+            <!-- Tasks Control -->
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold mb-2">টাস্ক ম্যানেজমেন্ট</h3>
+              <button id="add-task-btn" class="w-full bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 transition-colors mb-4">নতুন টাস্ক যোগ করুন</button>
+              <div class="overflow-x-auto">
+                <table class="min-w-full">
+                  <thead>
+                    <tr>
+                      <th class="rounded-l-lg">টাস্ক আইডি</th>
+                      <th>পয়েন্ট</th>
+                      <th>URL</th>
+                      <th class="rounded-r-lg">অ্যাকশন</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tasks-table-body">
+                    <!-- Task data will be inserted here by JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- User Details Modal -->
+  <div id="user-modal" class="modal">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-4">ব্যবহারকারীর তথ্য</h2>
+      <form id="user-edit-form">
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold mb-2">ইউজার আইডি</label>
+          <input type="text" id="modal-user-id" class="w-full px-4 py-2 bg-gray-100 rounded-md" readonly>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold mb-2">নাম</label>
+          <input type="text" id="modal-user-name" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-semibold mb-2">পয়েন্ট</label>
+          <input type="number" id="modal-user-points" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" id="close-user-modal" class="btn-action bg-gray-300 text-gray-800 hover:bg-gray-400 transition-colors">বন্ধ করুন</button>
+          <button type="submit" class="btn-action bg-blue-500 text-white hover:bg-blue-600 transition-colors">সেভ করুন</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Edit Modal -->
+  <div id="task-modal" class="modal">
+    <div class="modal-content">
+      <h2 class="text-2xl font-bold mb-4" id="task-modal-title">নতুন টাস্ক যোগ করুন</h2>
+      <form id="task-edit-form">
+        <input type="hidden" id="modal-task-id">
+        <div class="mb-4">
+          <label for="modal-task-points" class="block text-gray-700 font-semibold mb-2">পয়েন্ট</label>
+          <input type="number" id="modal-task-points" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        </div>
+        <div class="mb-4">
+          <label for="modal-task-url" class="block text-gray-700 font-semibold mb-2">URL</label>
+          <input type="url" id="modal-task-url" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" id="close-task-modal" class="btn-action bg-gray-300 text-gray-800 hover:bg-gray-400 transition-colors">বন্ধ করুন</button>
+          <button type="submit" class="btn-action bg-blue-500 text-white hover:bg-blue-600 transition-colors">সেভ করুন</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase Modular SDK v12 (Firestore + Auth)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+    import { getFirestore, collection, doc, updateDoc, onSnapshot, query, orderBy, getDoc, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+    // IMPORTANT: These variables are provided by the hosting environment.
+    // Use them to initialize Firebase correctly. DO NOT change these lines.
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // Firebase Initialization
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const loginPanel = document.getElementById('login-panel');
+    const adminPanel = document.getElementById('admin-panel');
+    const loginForm = document.getElementById('login-form');
+    const adminEmailInput = document.getElementById('admin-email');
+    const adminPasswordInput = document.getElementById('admin-password');
+
+    const usersTableBody = document.getElementById('users-table-body');
+    const withdrawalsTableBody = document.getElementById('withdrawals-table-body');
+    const tasksTableBody = document.getElementById('tasks-table-body');
+    const tabs = document.querySelectorAll('.tab-item');
+    const pages = document.querySelectorAll('.tab-content');
+
+    const userModal = document.getElementById('user-modal');
+    const userEditForm = document.getElementById('user-edit-form');
+    const modalUserId = document.getElementById('modal-user-id');
+    const modalUserName = document.getElementById('modal-user-name');
+    const modalUserPoints = document.getElementById('modal-user-points');
+    const closeUserModalBtn = document.getElementById('close-user-modal');
+
+    const adSettingsForm = document.getElementById('ad-settings-form');
+    const adsPerCycleInput = document.getElementById('ads-per-cycle');
+    const adResetTimeInput = document.getElementById('ad-reset-time');
+    const pointsPerAdInput = document.getElementById('points-per-ad');
+    
+    const addTaskBtn = document.getElementById('add-task-btn');
+    const taskModal = document.getElementById('task-modal');
+    const taskModalTitle = document.getElementById('task-modal-title');
+    const taskEditForm = document.getElementById('task-edit-form');
+    const modalTaskId = document.getElementById('modal-task-id');
+    const modalTaskPoints = document.getElementById('modal-task-points');
+    const modalTaskUrl = document.getElementById('modal-task-url');
+    const closeTaskModalBtn = document.getElementById('close-task-modal');
+
+    // =====================================
+    //          Authentication
+    // =====================================
+    
+    // Listen for auth state changes to show/hide panels
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Check if this is the admin user (match with your Firebase Rules)
+            const ADMIN_UID = "Rbi0TeYvAMfUdhBvtZMFYFJ4pT82"; // <--- আপনার আসল এডমিন UID এখানে বসান
+            if (user.uid === ADMIN_UID) {
+                loginPanel.classList.add('hidden');
+                adminPanel.classList.remove('hidden');
+                setupListeners();
+            } else {
+                console.log("Logged in user is not an admin.");
+                // Optionally, sign out non-admin users if they reach this page
+                auth.signOut();
+            }
+        } else {
+            console.log("No user signed in.");
+            loginPanel.classList.remove('hidden');
+            adminPanel.classList.add('hidden');
+        }
+    });
+
+    // Handle login form submission
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = adminEmailInput.value;
+      const password = adminPasswordInput.value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged listener will handle the UI change
+        alert("সফলভাবে লগইন করা হয়েছে!");
+      } catch (error) {
+        console.error("লগইন ব্যর্থ:", error.code, error.message);
+        let errorMessage = "লগইন ব্যর্থ হয়েছে। ইমেইল বা পাসওয়ার্ড ভুল।";
+        if (error.code === 'auth/invalid-credential') {
+            errorMessage = "ভুল ইমেইল বা পাসওয়ার্ড।";
+        }
+        alert(errorMessage);
+      }
+    });
+
+    // =====================================
+    //            UI & Listeners
+    // =====================================
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        pages.forEach(page => page.classList.add('hidden'));
+        const targetPage = document.getElementById(`page-${tab.id.split('-')[1]}`);
+        targetPage.classList.remove('hidden');
+      });
+    });
+
+    function setupListeners() {
+      // Listen to real-time updates for users
+      const usersQuery = collection(db, 'users');
+      onSnapshot(usersQuery, (snapshot) => {
+        usersTableBody.innerHTML = '';
+        if (snapshot.empty) {
+            usersTableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">কোন ব্যবহারকারী পাওয়া যায়নি।</td></tr>';
+        }
+        snapshot.forEach((doc) => {
+          const user = doc.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="rounded-l-lg">${user.telegramId || 'N/A'}</td>
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.points || 0}</td>
+            <td class="rounded-r-lg">
+              <button class="btn-action btn-edit" data-id="${doc.id}">এডিট করুন</button>
+            </td>
+          `;
+          usersTableBody.appendChild(tr);
+        });
+        document.querySelectorAll('#users-table-body .btn-edit').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const userId = e.target.dataset.id;
+            const userRef = doc(db, 'users', userId);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
+              modalUserId.value = userId;
+              modalUserName.value = userData.name || '';
+              modalUserPoints.value = userData.points || 0;
+              userModal.style.display = 'flex';
+            }
+          });
+        });
+      });
+
+      // Listen to real-time updates for withdrawals
+      const withdrawalsQuery = query(collection(db, 'withdrawals'), orderBy('createdAt', 'desc'));
+      onSnapshot(withdrawalsQuery, (snapshot) => {
+        withdrawalsTableBody.innerHTML = '';
+        if (snapshot.empty) {
+            withdrawalsTableBody.innerHTML = '<tr><td colspan="6" class="text-center p-4">কোন উইথড্রয়াল অনুরোধ নেই।</td></tr>';
+        }
+        snapshot.forEach((doc) => {
+          const withdrawal = doc.data();
+          const tr = document.createElement('tr');
+          const statusColor = withdrawal.status === 'pending' ? 'text-yellow-600' :
+                              withdrawal.status === 'completed' ? 'text-green-600' : 'text-red-600';
+          const actionsHtml = withdrawal.status === 'pending' ?
+            `<button class="btn-action btn-approve" data-id="${doc.id}">অনুমোদন</button>
+             <button class="btn-action btn-reject" data-id="${doc.id}">প্রত্যাখ্যান</button>` :
+            '';
+
+          tr.innerHTML = `
+            <td>${withdrawal.telegramId || 'N/A'}</td>
+            <td>${withdrawal.method || 'N/A'}</td>
+            <td>${withdrawal.accountId || 'N/A'}</td>
+            <td>${withdrawal.amount || 0}</td>
+            <td class="${statusColor}">${withdrawal.status || 'N/A'}</td>
+            <td>${actionsHtml}</td>
+          `;
+          withdrawalsTableBody.appendChild(tr);
+        });
+
+        document.querySelectorAll('.btn-approve').forEach(btn => {
+          btn.addEventListener('click', () => updateWithdrawalStatus(btn.dataset.id, 'completed'));
+        });
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+          btn.addEventListener('click', () => updateWithdrawalStatus(btn.dataset.id, 'rejected'));
+        });
+      });
+
+      // Listen to real-time updates for tasks
+      const tasksQuery = collection(db, 'tasks');
+      onSnapshot(tasksQuery, (snapshot) => {
+        tasksTableBody.innerHTML = '';
+        if (snapshot.empty) {
+            tasksTableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">কোনো টাস্ক সেট করা নেই।</td></tr>';
+        }
+        snapshot.forEach((doc) => {
+          const task = doc.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="rounded-l-lg">${doc.id}</td>
+            <td>${task.points}</td>
+            <td class="truncate max-w-[200px]">${task.url}</td>
+            <td class="rounded-r-lg">
+              <button class="btn-action btn-edit" data-id="${doc.id}">এডিট করুন</button>
+              <button class="btn-action btn-delete" data-id="${doc.id}">ডিলিট করুন</button>
+            </td>
+          `;
+          tasksTableBody.appendChild(tr);
+        });
+
+        document.querySelectorAll('#tasks-table-body .btn-edit').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const taskId = e.target.dataset.id;
+            const taskRef = doc(db, 'tasks', taskId);
+            const taskSnap = await getDoc(taskRef);
+            if (taskSnap.exists()) {
+              const taskData = taskSnap.data();
+              taskModalTitle.textContent = "টাস্ক এডিট করুন";
+              modalTaskId.value = taskId;
+              modalTaskPoints.value = taskData.points;
+              modalTaskUrl.value = taskData.url;
+              taskModal.style.display = 'flex';
+            }
+          });
+        });
+        document.querySelectorAll('#tasks-table-body .btn-delete').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const taskId = e.target.dataset.id;
+            if (confirm("আপনি কি নিশ্চিত এই টাস্কটি মুছে ফেলবেন?")) {
+              deleteTask(taskId);
+            }
+          });
+        });
+      });
+
+      // Get initial ad settings
+      getAdSettings();
+    }
+
+    // =====================================
+    //         Data Manipulation
+    // =====================================
+
+    // Handle user data update
+    userEditForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userId = modalUserId.value;
+      const newName = modalUserName.value;
+      const newPoints = Number(modalUserPoints.value);
+
+      if (!userId) return;
+
+      try {
+        await updateDoc(doc(db, 'users', userId), {
+          name: newName,
+          points: newPoints
+        });
+        alert('ব্যবহারকারীর ডেটা সফলভাবে আপডেট করা হয়েছে!');
+        userModal.style.display = 'none';
+      } catch (error) {
+        console.error("Error updating user data:", error);
+        alert("ব্যবহারকারীর ডেটা আপডেট করতে ব্যর্থ হয়েছে।");
+      }
+    });
+
+    // Handle withdrawal status update
+    async function updateWithdrawalStatus(docId, newStatus) {
+      try {
+        await updateDoc(doc(db, 'withdrawals', docId), { status: newStatus });
+        alert(`অনুরোধ ${newStatus === 'completed' ? 'অনুমোদিত' : 'প্রত্যাখ্যাত'} হয়েছে!`);
+      } catch (error) {
+        console.error("Error updating withdrawal status:", error);
+        alert("উইথড্রয়াল স্ট্যাটাস আপডেট করতে ব্যর্থ হয়েছে।");
+      }
+    }
+
+    // Handle ad settings update
+    adSettingsForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const adsPerCycle = Number(adsPerCycleInput.value);
+      const adResetTime = Number(adResetTimeInput.value);
+      const pointsPerAd = Number(pointsPerAdInput.value);
+      
+      const settingsRef = doc(db, 'admin', 'settings');
+      try {
+        await setDoc(settingsRef, {
+          adsPerCycle,
+          adResetTime,
+          pointsPerAd
+        }, { merge: true });
+        alert("অ্যাড সেটিংস সফলভাবে আপডেট করা হয়েছে!");
+      } catch (e) {
+        console.error("Error updating ad settings:", e);
+        alert("অ্যাড সেটিংস আপডেট করতে ব্যর্থ হয়েছে।");
+      }
+    });
+
+    // Get initial ad settings
+    async function getAdSettings() {
+      const settingsRef = doc(db, 'admin', 'settings');
+      const settingsSnap = await getDoc(settingsRef);
+      if (settingsSnap.exists()) {
+        const data = settingsSnap.data();
+        adsPerCycleInput.value = data.adsPerCycle || 10;
+        adResetTimeInput.value = data.adResetTime || 30;
+        pointsPerAdInput.value = data.pointsPerAd || 10;
+      }
+    }
+
+    // Add/Edit Task
+    addTaskBtn.addEventListener('click', () => {
+      taskModalTitle.textContent = "নতুন টাস্ক যোগ করুন";
+      modalTaskId.value = '';
+      taskEditForm.reset();
+      taskModal.style.display = 'flex';
+    });
+
+    taskEditForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const taskId = modalTaskId.value;
+      const points = Number(modalTaskPoints.value);
+      const url = modalTaskUrl.value;
+
+      if (!points || !url) {
+        alert("সব ফিল্ড পূরণ করুন।");
+        return;
+      }
+
+      try {
+        if (taskId) {
+          // Update existing task
+          await updateDoc(doc(db, 'tasks', taskId), { points, url });
+          alert("টাস্ক সফলভাবে আপডেট করা হয়েছে!");
+        } else {
+          // Add new task
+          await addDoc(collection(db, 'tasks'), { points, url });
+          alert("নতুন টাস্ক সফলভাবে যোগ করা হয়েছে!");
+        }
+        taskModal.style.display = 'none';
+      } catch (e) {
+        console.error("Error saving task:", e);
+        alert("টাস্ক সেভ করতে ব্যর্থ হয়েছে।");
+      }
+    });
+
+    async function deleteTask(taskId) {
+      try {
+        await deleteDoc(doc(db, 'tasks', taskId));
+        alert("টাস্ক সফলভাবে মুছে ফেলা হয়েছে!");
+      } catch (e) {
+        console.error("Error deleting task:", e);
+        alert("টাস্ক মুছতে ব্যর্থ হয়েছে।");
+      }
+    }
+
+    // Close modals
+    closeUserModalBtn.addEventListener('click', () => {
+      userModal.style.display = 'none';
+    });
+    closeTaskModalBtn.addEventListener('click', () => {
+      taskModal.style.display = 'none';
+    });
+  </script>
+
+</body>
+</html>
